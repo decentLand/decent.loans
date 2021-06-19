@@ -3,52 +3,66 @@ export async function handle (state, action) {
   const invocations = state.invocations;
   const input = action.input;
   const caller = action.caller;
+  const foreignCalls = state.foreignCalls
 
-  if (input.function == "transfer") {
-    const target = input.target;
-    const qty = input.qty;
+  const FCP1_ADDRESS = "FdY68iYqTvA40U34aXQBBYseGmIUmLV-u57bT7LZWm0"
+  const FCP2_ADDRESS = "l2uG_a4IoB3D910lpk2K30enL0rapLbH0GNt5O-PAdA"
 
-    if (!Number.isInteger(qty)) {
-      throw new ContractError(`Invalid value for "qty". Must be an integer`);
+  
+  if (input.function === "deposit") {
+    // token contract address
+    const token = input.token
+    const qty = input.qty
+
+    if (token !== FCP1_ADDRESS || token !== FCP2_ADDRESS) {
+      throw new ContractError(`invalid token supplied`)
     }
 
-    if (!target) {
-      throw new ContractError(`No target specified`);
+    if (! Number.isInteger(qty)) {
+      throw new ContractError(`only integer token amount is allowed`)
     }
 
-    if (qty <= 0 || caller == target) {
-      throw new ContractError("Invalid token transfer");
-    }
+    const invocation = `{"function": "transfer", "target": "${SmartWeave.contract.id}", "qty": ${qty}}`
 
-    if (balances[caller] < qty) {
-      throw new ContractError(`Caller balance not high enough to send ${qty} token(s)!`);
-    }
+    foreignCalls.push({
+      contract: token,
+      input: invocation
+    })
 
-    balances[caller] -= qty;
-    if (target in balances) {
-      balances[target] += qty;
-    } else {
-      balances[target] = qty;
-    }
+    return { state }
 
-    return { state };
   }
 
-  if (input.function == "balance") {
-    const target = input.target;
-    const ticker = state.ticker;
-    
-    if (typeof target !== "string") {
-      throw new ContractError(`Must specificy target to get balance for`);
+  if (input.function === "readDeposit") {
+    //invocation TXID
+    const confirmedInvocation = input.invocation
+    // the foreign contract
+    const readFrom = input.readFrom
+
+    if (typeof readFrom !== "string" || readFrom.length !== 43) {
+      throw new ContractError(`invalid SWC address`)
     }
 
-    if (typeof balances[target] !== "number") {
-      throw new ContractError(`Cannnot get balance, target does not exist`);
+    if (readFrom !== FCP1_ADDRESS || readFrom !== FCP2_ADDRESS) {
+      throw new ContractError(`this contract ${readFrom} isn't supported`)
     }
 
-    return { result: { target, ticker, balance: balances[target] } };
+    const foreignState = SmartWeave.contracts.readContractState(readFrom)
+
+    if (! foreignState["invocations"].includes(invocation)) {
+      throw new ContractError(`invalid invocation TXID`)
+    }
+    const invocationTxObject = await SmartWeave.arweave.transactions.get(invocation)
+    const invocationOwner = SmartWeave.utils.wallets.ownerToAddress(invocationTxObject.owner)
+
+    if (caller !== invocationOwner) {
+      throw new ContractError(`only the invocation owner can read the deposit`)
+    }
+
+
   }
-// user calls `invoke` from ABC contract
+
+
   if (input.function === "invoke") {
     if (!input.invocation) {
       throw new ContractError(`Missing function invocation`);
@@ -97,3 +111,4 @@ export async function handle (state, action) {
 
   throw new ContractError(`No function supplied or function not recognised: "${input.function}"`);
 }
+
