@@ -10,6 +10,9 @@ Arweave applications ecosystem still have a very limited financial apps (DeFi-li
 
 <center><img src="./media/diagram.png"></center>
 
+## II- Borrowing:
+
+<center><img src="./media/borrowing.png"></center>
 
 # License
 This project is licensed under the MIT license.
