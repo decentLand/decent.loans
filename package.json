@@ -1,0 +1,26 @@
+{
+  "name": "lending",
+  "version": "1.0.0",
+  "description": "a P2P decentralized Arweave based lending platform - PoC",
+  "main": "./contracts/deposits.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/decentLand/decent.loans.git"
+  },
+  "keywords": [
+    "lending",
+    "defi",
+    "Arweave",
+    "finance",
+    "smart-contract"
+  ],
+  "author": "darwin",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/decentLand/decent.loans/issues"
+  },
+  "homepage": "https://github.com/decentLand/decent.loans#readme"
+}
