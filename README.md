@@ -19,7 +19,7 @@ Arweave applications ecosystem still have a very limited financial apps (DeFi-li
 <center><img src="./media/paydebt.png"></center>
 
 ## Note
-This contract represents a prototype or PoC for the first SWC based lending platform on Arweave. Contract's security has not been checked yet.
+This contract represents a prototype or PoC for the first SWC based lending platform on Arweave. Contract's security has not been checked yet. You can check the latest tested contract activities by browsing `thVBPGlDcCfRoKbGXH8a5CMbjWIZ3tJrHvsVIW51Cws` SWC's activities on viewblock.io
 
 # License
 This project is licensed under the MIT license.
